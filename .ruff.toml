@@ -1,0 +1,16 @@
+target-version = "py313"
+line-length = 100
+indent-width = 4
+
+[lint]
+select = ["ALL"]
+ignore = [
+  "COM812", "ISC001",  # フォーマッタ衝突回避
+  "D203", "D212", "D401",  # Docstring は最初は緩め
+]
+preview = true
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false

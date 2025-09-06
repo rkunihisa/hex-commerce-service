@@ -13,10 +13,35 @@ build-backend = "hatchling.build"
 
 [tool.rye]
 managed = true
-dev-dependencies = []
+dev-dependencies = [
+    "ruff>=0.12.12",
+    "mypy>=1.17.1",
+    "pytest>=8.4.2",
+    "hypothesis>=6.138.14",
+    "nox>=2025.5.1",
+    "pre-commit>=4.3.0",
+    "pytest-cov>=6.2.1",
+]
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/hex_commerce_service"]
+
+[tool.rye.scripts]
+ci = "format && lint && typecheck && test-cov"
+format = "ruff format ."
+lint = "ruff check ."
+fix = "ruff check --fix ."
+typecheck = "mypy --strict ."
+test = "pytest"
+
+[tool.pytest.ini_options]
+testpaths = ["src/hex_commerce_service/tests"]
+addopts = [
+    "-q",
+    "--cov=src/hex_commerce_service",
+    "--cov-branch",
+    "--cov-report=term-missing",
+]

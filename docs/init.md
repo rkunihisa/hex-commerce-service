@@ -4,10 +4,25 @@
 
 https://note.spectee.com/n/n12fae344a538
 
+## python仮想環境に入る
+
+```
+source .venv/bin/activate
+```
+
+## vscodeのpythonインタープリタに設定
+
+```
+which python
+// /home/user/.rye/shims/python
+```
+vscodeにて、コマンドパレットで「Python: Select Interpreter」> 「Enter interpreter path」に上記のpathを登録
+
+
 ## 開発ツールを追加（dev 依存）
 
 ```
-rye add --dev ruff mypy pytest hypothesis nox pre-commit
+rye add --dev ruff mypy pytest hypothesis
 rye sync
 ```
 

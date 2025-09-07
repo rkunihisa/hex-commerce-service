@@ -35,10 +35,13 @@ typecheck = "mypy --strict ."
 test = "pytest"
 
 [tool.pytest.ini_options]
-testpaths = ["src/hex_commerce_service/tests"]
+testpaths = ["src/tests"]
 addopts = [
     "-q",
-    "--cov=src/hex_commerce_service",
+    "--cov=src",
     "--cov-branch",
-    "--cov-report=term-missing",
+    "--cov-report=term-missing"
 ]
+
+[tool.coverage.run]
+omit = ["*/__init__.py"]

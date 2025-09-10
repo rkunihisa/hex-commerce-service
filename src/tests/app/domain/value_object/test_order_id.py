@@ -1,4 +1,4 @@
-from hex_commerce_service.app.domain.value_object.order_id import OrderId
+from hex_commerce_service.app.domain.value_objects.order_id import OrderId
 
 import pytest
 from uuid import UUID

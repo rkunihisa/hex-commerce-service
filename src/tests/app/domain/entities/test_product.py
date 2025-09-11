@@ -53,3 +53,31 @@ def test_change_price_invalid(value: Money) -> None:
         product.change_price(value)
     # assert
     assert "unit price must be positive" in str(excinfo.value)
+
+def test_eq() -> None:
+    # arrange
+    product1 = Product(sku="SKU123", name="test", unit_price=Money.from_major(1000, "JPY"))
+    product2 = Product(sku="SKU123", name="test", unit_price=Money.from_major(1000, "JPY"))
+    product3 = Product(sku="SKU124", name="test", unit_price=Money.from_major(1000, "JPY"))
+    # act/assert
+    assert product1 == product2
+    assert product1 != product3
+
+
+def test_eq_notimplemented() -> None:
+    # arrange
+    product1 = Product(sku="SKU123", name="test", unit_price=Money.from_major(1000, "JPY"))
+    not_product = "not a product"
+    # act
+    result = product1.__eq__(not_product)
+    # assert
+    assert result is NotImplemented
+
+def test_hash() -> None:
+    # arrange
+    product1 = Product(sku="SKU123", name="test", unit_price=Money.from_major(1000, "JPY"))
+    product2 = Product(sku="SKU123", name="other", unit_price=Money.from_major(2000, "JPY"))
+    product3 = Product(sku="SKU124", name="test", unit_price=Money.from_major(1000, "JPY"))
+    # act/assert
+    assert hash(product1) == hash(product2)  # SKUが同じならハッシュも同じ
+    assert hash(product1) != hash(product3)  # SKUが異なればハッシュも異なる

@@ -1,5 +1,5 @@
 import pytest
-from hex_commerce_service.app.domain.value_objects.sku import Sku
+from hex_commerce_service.app.domain.value_objects import Sku
 
 @pytest.mark.parametrize("value,expected", [
     ("A", "A"),

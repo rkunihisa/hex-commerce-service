@@ -1,6 +1,6 @@
-from hex_commerce_service.app.domain.entities.product import Product
+from hex_commerce_service.app.domain.entities import Product
 from hex_commerce_service.app.domain.errors import ValidationError
-from hex_commerce_service.app.domain.value_objects.money import Money
+from hex_commerce_service.app.domain.value_objects import Money
 
 import pytest
 

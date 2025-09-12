@@ -1,4 +1,4 @@
-from hex_commerce_service.app.domain.value_objects.email import Email
+from hex_commerce_service.app.domain.value_objects import Email
 
 import pytest
 

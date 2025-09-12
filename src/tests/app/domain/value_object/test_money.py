@@ -1,6 +1,6 @@
 from decimal import Decimal
 import pytest
-from hex_commerce_service.app.domain.value_objects.money import Money
+from hex_commerce_service.app.domain.value_objects import Money
 
 @pytest.mark.parametrize("amount, currency, expected", [
     (10.00, "JPY", Money(amount=Decimal('10.00'), currency='JPY')),

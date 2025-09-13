@@ -1,4 +1,3 @@
-from operator import inv
 from hex_commerce_service.app.domain.entities import Inventory
 from hex_commerce_service.app.domain.errors import NegativeQuantity, OutOfStock
 from hex_commerce_service.app.domain.value_objects import Sku

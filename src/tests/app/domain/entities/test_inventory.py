@@ -51,9 +51,62 @@ def test_inventory_valid_set_on_hand(sku: Sku, qty:int, expected: int) -> None:
     (Inventory(location="japan", _on_hand={Sku("SKU0"): 10}), Sku("SKU0"), 10, 20),
     (Inventory(location="japan", _on_hand={Sku("SKU0"): 5}), Sku("SKU1"), 5, 5),
 ])
-def test_inventory_valid_add(inventory: Inventory, sku: Sku, qty:int, expected: int) -> None:
+def test_inventory_add(inventory: Inventory, sku: Sku, qty:int, expected: int) -> None:
     # act
     inventory.add(sku, qty)
     # assert
     assert inventory.available(sku) == expected
 
+def test_inventory_invalid_add() -> None:
+    # arrange
+    inventory = Inventory(location="japan", _on_hand={Sku("SKU0"): 10})
+    # act
+    with pytest.raises(NegativeQuantity) as excinfo:
+        inventory.add(Sku("SKU0"), -5)
+    # assert
+    assert "add quantity must be positive" in str(excinfo.value)
+
+def test_inventory_remove() -> None:
+    # arrange
+    inventory = Inventory(location="japan", _on_hand={Sku("SKU0"): 10})
+    # act
+    inventory.remove(Sku("SKU0"), 5)
+    # assert
+    assert inventory.available(Sku("SKU0")) == 5
+
+def test_inventory_invalid_remove_negative() -> None:
+    # arrange
+    inventory = Inventory(location="japan", _on_hand={Sku("SKU0"): 10})
+    # act
+    with pytest.raises(NegativeQuantity) as excinfo:
+        inventory.remove(Sku("SKU0"), -5)
+    # assert
+    assert "remove quantity must be positive" in str(excinfo.value)
+
+def test_inventory_invalid_remove_out_of_stock() -> None:
+    # arrange
+    inventory = Inventory(location="japan", _on_hand={Sku("SKU0"): 10})
+    # act
+    with pytest.raises(OutOfStock) as excinfo:
+        inventory.remove(Sku("SKU0"), 15)
+    # assert
+    assert "cannot remove 15; only 10 available" in str(excinfo.value)
+
+@pytest.mark.parametrize("inventory, sku, qty, expected", [
+    (Inventory(location="japan", _on_hand={Sku("SKU0"): 10}), Sku("SKU0"), 1, True),
+    (Inventory(location="japan", _on_hand={Sku("SKU0"): 1}), Sku("SKU1"), 10, False),
+])
+def test_inventory_can_fulfill(inventory: Inventory, sku: Sku, qty: int, expected: bool) -> None:
+    # act/assert
+    assert inventory.can_fulfill(sku, qty) == expected
+
+def test_inventory_invalid_can_fulfill() -> None:
+    # arrange
+    inventory = Inventory(location="japan", _on_hand={Sku("SKU0"): 10})
+    # act
+    with pytest.raises(NegativeQuantity) as excinfo:
+        inventory.can_fulfill(Sku("SKU0"), -5)
+    # assert
+    assert "requested quantity must be positive" in str(excinfo.value)
+
+def test_inventory_allocate() -> None:

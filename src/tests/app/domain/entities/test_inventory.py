@@ -47,6 +47,15 @@ def test_inventory_valid_set_on_hand(sku: Sku, qty:int, expected: int) -> None:
     assert inventory.available(sku) == qty
     assert len(inventory._on_hand) == expected
 
+def test_inventory_invalid_set_on_hand() -> None:
+    # arrange
+    inventory = Inventory(location="japan", _on_hand={Sku("SKU0"): 10})
+    # act
+    with pytest.raises(NegativeQuantity) as excinfo:
+        inventory.set_on_hand(Sku("SKU0"), -5)
+    # assert
+    assert "on-hand cannot be negative" in str(excinfo.value)
+
 @pytest.mark.parametrize("inventory, sku, qty, expected", [
     (Inventory(location="japan", _on_hand={Sku("SKU0"): 10}), Sku("SKU0"), 10, 20),
     (Inventory(location="japan", _on_hand={Sku("SKU0"): 5}), Sku("SKU1"), 5, 5),

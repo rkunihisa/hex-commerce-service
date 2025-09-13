@@ -110,3 +110,18 @@ def test_inventory_invalid_can_fulfill() -> None:
     assert "requested quantity must be positive" in str(excinfo.value)
 
 def test_inventory_allocate() -> None:
+    # arrange
+    inventory = Inventory(location="japan", _on_hand={Sku("SKU0"): 10})
+    # act
+    inventory.allocate(Sku("SKU0"), 5)
+    # assert
+    assert inventory.available(Sku("SKU0")) == 5
+
+def test_inventory_invalid_allocate_out_of_stock() -> None:
+    # arrange
+    inventory = Inventory(location="japan", _on_hand={Sku("SKU0"): 10})
+    # act
+    with pytest.raises(OutOfStock) as excinfo:
+        inventory.allocate(Sku("SKU0"), 15)
+    # assert
+    assert "requested 15 of SKU0 exceeds availability 10" in str(excinfo.value)

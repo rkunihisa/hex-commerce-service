@@ -11,7 +11,6 @@ from hex_commerce_service.app.domain.value_objects import Sku
 class Inventory:
     """Inventory keeps on-hand quantities per SKU with the invariant: stock >= 0."""
 
-    # optional identity for equality/hash if複数ロケーション等を想定
     location: str = "default"
     _on_hand: Dict[Sku, int] = field(default_factory=dict)
 

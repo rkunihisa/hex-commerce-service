@@ -1,15 +1,19 @@
 target-version = "py313"
 line-length = 100
 indent-width = 4
+exclude = ["src/tests"]
 
 [lint]
 select = ["ALL"]
 ignore = [
   "COM812", "ISC001",  # フォーマッタ衝突回避
-  "D100", "D203", "D212", "D401", "CPY001", "D104", "D413",　"D105", # Docstring
+  "D100", "D203", "D212", "D401", "CPY001", "D101", "D102", "D103", "D104", "D413", "D105", # Docstring
   "S101", # assert許可
   "PLR2004", # magic number許可
   "SIM108", # 三項演算子を強制しない
+  "EM101", "EM102",
+  "TRY003",
+  "TC001",
 ]
 preview = true
 
@@ -18,5 +22,4 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 
-exclude = ["src/hex_commerce_service/tests/**"]
 

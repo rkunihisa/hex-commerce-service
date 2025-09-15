@@ -27,11 +27,12 @@ allow-direct-references = true
 packages = ["src/hex_commerce_service"]
 
 [tool.rye.scripts]
-ci = "format && lint && typecheck && test-cov"
-format = "ruff format ."
-lint = "ruff check ."
-fix = "ruff check --fix ."
-typecheck = "mypy --strict ."
+ci = { chain = ["check", "test"] }
+check = { chain = ["format:ruff", "check:ruff", "check:mypy"] }
+"format:ruff" = "ruff format ."
+"check:ruff" = "ruff check ."
+"fix:ruff" = "ruff check --fix ."
+"check:mypy" = "mypy --strict ."
 test = "pytest"
 
 [tool.pytest.ini_options]

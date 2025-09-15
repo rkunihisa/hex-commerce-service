@@ -1,7 +1,9 @@
-from hex_commerce_service.app.domain.value_objects import OrderId
+from uuid import UUID
 
 import pytest
-from uuid import UUID
+
+from hex_commerce_service.app.domain.value_objects import OrderId
+
 
 def test_new() -> None:
     # arrange
@@ -13,6 +15,7 @@ def test_new() -> None:
     # UUID version 4
     assert result.version == 4
 
+
 def test_parse_valid_uuid() -> None:
     # arrange
     uuid_str = "123e4567-e89b-12d3-a456-426614174000"
@@ -22,12 +25,14 @@ def test_parse_valid_uuid() -> None:
     assert isinstance(order_id.value, UUID)
     assert str(order_id.value) == uuid_str
 
+
 def test_parse_invalid_uuid() -> None:
     # act
     with pytest.raises(ValueError) as excinfo:
         OrderId.parse("not-a-uuid")
     # assert
     assert "invalid order id: 'not-a-uuid'" in str(excinfo.value)
+
 
 def test_str_returns_uuid_string() -> None:
     # arrange

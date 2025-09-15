@@ -9,18 +9,17 @@ class ValidationError(DomainError):
     """Generic validation failure."""
 
 
-class CurrencyMismatch(DomainError):
+class CurrencyMismatchError(DomainError):
     """Tried to combine values with different currencies."""
 
 
-class OutOfStock(DomainError):
+class OutOfStockError(DomainError):
     """Insufficient inventory to fulfill a request."""
 
 
-class NegativeQuantity(DomainError):
+class NegativeQuantityError(DomainError):
     """Quantity must be positive."""
 
 
 class OrderStateError(DomainError):
     """Invalid operation for current order state."""
-

@@ -16,7 +16,7 @@ class OrderId:
     def parse(cls, value: str) -> OrderId:
         try:
             return cls(UUID(value))
-        except Exception as exc:  # noqa: BLE001 - broad for parse robustness
+        except Exception as exc:
             msg = f"invalid order id: {value!r}"
             raise ValueError(msg) from exc
 

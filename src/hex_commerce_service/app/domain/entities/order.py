@@ -1,25 +1,33 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import ClassVar, Iterable, List
+from typing import TYPE_CHECKING, ClassVar
 
-from hex_commerce_service.app.domain.errors import CurrencyMismatch, NegativeQuantity, ValidationError
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+from hex_commerce_service.app.domain.errors import (
+    CurrencyMismatchError,
+    NegativeQuantityError,
+    ValidationError,
+)
 from hex_commerce_service.app.domain.value_objects import Money, OrderId, Sku
 
 
 @dataclass(frozen=True, slots=True)
 class OrderLine:
     """Line item inside an Order. Immutable value-like element."""
+
     sku: Sku
     quantity: int
     unit_price: Money
 
-    # 明示的にパターンマッチ可能に（名前でのマッチを意図）
+    # 明示的にパターンマッチ可能に。名前でのマッチを意図。
     __match_args__: ClassVar[tuple[str, str, str]] = ("sku", "quantity", "unit_price")
 
     def __post_init__(self) -> None:
         if self.quantity <= 0:
-            raise NegativeQuantity("order line quantity must be positive")
+            raise NegativeQuantityError("order line quantity must be positive")
 
     @property
     def line_total(self) -> Money:
@@ -28,7 +36,8 @@ class OrderLine:
 
 @dataclass(slots=True)
 class Order:
-    """Aggregate root for order.
+    """
+    Aggregate root for order.
 
     Invariants:
       - All lines must share the same currency as the order.
@@ -37,7 +46,7 @@ class Order:
 
     id: OrderId
     currency: str  # ISO4217-like (CurrencyCode). Keep as str to ease serialization boundary.
-    lines: List[OrderLine] = field(default_factory=list)
+    lines: list[OrderLine] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         cur = self.currency
@@ -56,12 +65,12 @@ class Order:
     # mutation methods
     def add_line(self, line: OrderLine) -> None:
         if str(line.unit_price.currency) != self.currency:
-            raise CurrencyMismatch("line currency must match order currency")
+            raise CurrencyMismatchError("line currency must match order currency")
         self.lines.append(line)
 
     def add_item(self, sku: Sku, quantity: int, unit_price: Money) -> None:
         if str(unit_price.currency) != self.currency:
-            raise CurrencyMismatch("unit price currency must match order currency")
+            raise CurrencyMismatchError("unit price currency must match order currency")
         self.add_line(OrderLine(sku=sku, quantity=quantity, unit_price=unit_price))
 
     def remove_line_at(self, index: int) -> OrderLine:
@@ -75,7 +84,7 @@ class Order:
         # sum via Money addition (same currency guaranteed)
         total = Money.from_major(0, self.currency)
         for ln in self.lines:
-            total = total + ln.line_total
+            total += ln.line_total
         return total
 
     def iterate_skus(self) -> Iterable[Sku]:

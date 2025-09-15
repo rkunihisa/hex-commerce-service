@@ -34,7 +34,7 @@ class Product:
     def change_price(self, new_price: Money) -> None:
         if new_price.amount <= 0:
             raise ValidationError("unit price must be positive")
-        # 通貨は制約しない（注文側で通貨整合性を担保）
+        # 通貨は制約しない。注文側で通貨整合性を担保する。
         self.unit_price = new_price
 
 

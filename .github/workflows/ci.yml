@@ -14,7 +14,11 @@ jobs:
         uses: eifinger/setup-rye@v4
         with:
           enable-cache: true
-          cache-prefix: rye-cache
+          cache-prefix: 'rye-cache'
+
+      - name: Do something if the cache was restored
+        if: steps.setup-rye.outputs.cache-hit == 'true'
+        run: echo "Cache was restored"
 
       - name: Install dependencies
         run: rye sync

@@ -1,25 +1,29 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Iterable
-from types import TracebackType
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Self
+from uuid import uuid4
 
-from hex_commerce_service.app.application.ports.events import EventPublisher
-from hex_commerce_service.app.application.ports.ids import IdGenerator
-from hex_commerce_service.app.application.ports.unit_of_work import UnitOfWork
-from hex_commerce_service.app.application.ports.repositories import (
-    InventoryRepository,
-    OrderRepository,
-    ProductRepository,
-)
-from hex_commerce_service.app.application.ports.time import Clock
-from hex_commerce_service.app.domain.value_objects import OrderId
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+    from types import TracebackType
+
 from hex_commerce_service.app.adapters.inmemory.repositories import (
     InMemoryInventoryRepository,
     InMemoryOrderRepository,
     InMemoryProductRepository,
 )
+from hex_commerce_service.app.application.ports import (
+    Clock,
+    EventPublisher,
+    IdGenerator,
+    InventoryRepository,
+    OrderRepository,
+    ProductRepository,
+    UnitOfWork,
+)
+from hex_commerce_service.app.domain.value_objects import OrderId
 
 
 @dataclass(slots=True)
@@ -27,15 +31,14 @@ class InMemoryClock(Clock):
     fixed: datetime | None = None
 
     def now(self) -> datetime:
-        return self.fixed or datetime.now(tz=timezone.utc)
+        return self.fixed or datetime.now(tz=UTC)
 
 
 @dataclass(slots=True)
 class InMemoryIdGenerator(IdGenerator):
-    def new_order_id(self) -> OrderId:
+    @staticmethod
+    def new_order_id() -> OrderId:
         # Use UUID v4; deterministic behavior is not required for tests.
-        from uuid import uuid4
-
         return OrderId(uuid4())
 
 
@@ -60,7 +63,7 @@ class InMemoryUnitOfWork(UnitOfWork):
     _committed: bool = False
     _in_context: bool = False
 
-    def __enter__(self) -> InMemoryUnitOfWork:
+    def __enter__(self) -> Self:
         self._in_context = True
         self._committed = False
         return self
@@ -69,7 +72,7 @@ class InMemoryUnitOfWork(UnitOfWork):
         self,
         exc_type: type[BaseException] | None,
         exc: BaseException | None,
-        tb: TracebackType | None
+        tb: TracebackType | None,
     ) -> None:
         self._in_context = False
         if exc_type:

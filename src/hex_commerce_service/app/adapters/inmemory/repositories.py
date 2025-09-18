@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-from hex_commerce_service.app.application.ports.repositories import (
+from hex_commerce_service.app.application.ports import (
     InventoryRepository,
     OrderRepository,
     ProductRepository,

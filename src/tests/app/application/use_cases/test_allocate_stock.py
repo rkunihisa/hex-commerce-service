@@ -58,20 +58,25 @@ def test_allocate_stock_success() -> None:
     events = getattr(uow.events, "events", [])
     assert any(isinstance(e, StockAllocated) for e in events)
 
-
-def test_allocate_stock_missing_or_insufficient() -> None:
+def test_allocate_stock_no_inventory() -> None:
     uow = InMemoryUnitOfWork()
     uc = AllocateStockUseCase(uow=uow)
-
-    # no such order
-    with pytest.raises(ValidationError):
-        uc.execute(AllocateStockCommand(order_id=InMemoryIdGenerator().new_order_id()))
-
     # place order but no inventory
-    order_id = seed_order_and_inventory(InMemoryUnitOfWork())  # different UoW
+    order_id = seed_order_and_inventory(uow)  # different UoW
     with pytest.raises(ValidationError):
         uc.execute(AllocateStockCommand(order_id=InMemoryIdGenerator().new_order_id()))
 
+def test_allocate_stock_invalid_command() -> None:
+    # insufficient stock
+    uow = InMemoryUnitOfWork()
+    uc = AllocateStockUseCase(uow=uow)
+    order_id = seed_order_and_inventory(uow)
+    inv = uow.inventories.get("default")
+    assert inv is not None
+    with pytest.raises(ValidationError):
+        uc.execute(AllocateStockCommand(order_id=list(uow.orders.list())[0].id, location=None))
+
+def test_allocate_stock_insufficient_stock() -> None:
     # insufficient stock
     uow = InMemoryUnitOfWork()
     order_id = seed_order_and_inventory(uow)

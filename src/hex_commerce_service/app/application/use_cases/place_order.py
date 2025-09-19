@@ -6,7 +6,7 @@ from hex_commerce_service.app.application.messages.events import OrderPlaced
 from hex_commerce_service.app.application.ports.ids import IdGenerator
 from hex_commerce_service.app.application.ports.unit_of_work import UnitOfWork
 from hex_commerce_service.app.domain.entities import Order, OrderLine
-from hex_commerce_service.app.domain.errors import CurrencyMismatch, ValidationError
+from hex_commerce_service.app.domain.errors import CurrencyMismatchError, ValidationError
 from hex_commerce_service.app.domain.value_objects import Money, Sku
 
 
@@ -50,7 +50,7 @@ class PlaceOrderUseCase:
         currency = str(products[0].unit_price.currency)
         for p in products[1:]:
             if str(p.unit_price.currency) != currency:
-                raise CurrencyMismatch("all items must share the same currency")
+                raise CurrencyMismatchError("all items must share the same currency")
 
         # 2) Order を生成し、OrderLine を追加
         order = Order(id=self._id_gen.new_order_id(), currency=currency)

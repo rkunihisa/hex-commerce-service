@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from hex_commerce_service.app.application.messages.events import StockAllocated
 from hex_commerce_service.app.application.ports.unit_of_work import UnitOfWork
-from hex_commerce_service.app.domain.errors import OutOfStock, ValidationError
+from hex_commerce_service.app.domain.errors import OutOfStockError, ValidationError
 from hex_commerce_service.app.domain.value_objects import OrderId
 
 
@@ -36,7 +36,7 @@ class AllocateStockUseCase:
         # 事前チェック。全行を満たせるか。
         for line in order.lines:
             if inventory.available(line.sku) < line.quantity:
-                raise OutOfStock(
+                raise OutOfStockError(
                     f"insufficient stock for {line.sku}: "
                     f"need {line.quantity}, have {inventory.available(line.sku)}"
                 )

@@ -4,7 +4,7 @@ from .repositories import InventoryRepository, OrderRepository, ProductRepositor
 from .time import Clock
 from .unit_of_work import UnitOfWork
 
-__all__ = (
+__all__ = [
     "Clock",
     "EventPublisher",
     "IdGenerator",
@@ -12,4 +12,4 @@ __all__ = (
     "OrderRepository",
     "ProductRepository",
     "UnitOfWork",
-)
+]

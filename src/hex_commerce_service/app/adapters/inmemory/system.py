@@ -9,11 +9,6 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from types import TracebackType
 
-from hex_commerce_service.app.adapters.inmemory.repositories import (
-    InMemoryInventoryRepository,
-    InMemoryOrderRepository,
-    InMemoryProductRepository,
-)
 from hex_commerce_service.app.application.ports import (
     Clock,
     EventPublisher,
@@ -24,6 +19,12 @@ from hex_commerce_service.app.application.ports import (
     UnitOfWork,
 )
 from hex_commerce_service.app.domain.value_objects import OrderId
+
+from .repositories import (
+    InMemoryInventoryRepository,
+    InMemoryOrderRepository,
+    InMemoryProductRepository,
+)
 
 
 @dataclass(slots=True)

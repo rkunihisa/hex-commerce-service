@@ -67,7 +67,7 @@ class TransactionalEventPublisher(EventPublisher):
     # 互換性: testsで `getattr(uow.events, "events", [])` を参照できるように
     @property
     def events(self) -> list[object]:
-        return self._uow._event_sink.events
+        return self._uow.event_sink.events
 
 
 @dataclass(slots=True)
@@ -77,7 +77,7 @@ class InMemoryUnitOfWork(UnitOfWork):
     inventories: InventoryRepository = field(default_factory=InMemoryInventoryRepository)
 
     # イベントはトランザクション・バッファリング
-    _event_sink: InMemoryEventSink = field(default_factory=InMemoryEventSink)
+    event_sink: InMemoryEventSink = field(default_factory=InMemoryEventSink)
     events: EventPublisher = field(init=False)
 
     _committed: bool = False
@@ -92,10 +92,8 @@ class InMemoryUnitOfWork(UnitOfWork):
     _pending_events: list[object] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        # UoWに結び付いたトランザクション対応Publisher
         object.__setattr__(self, "events", TransactionalEventPublisher(self))
 
-    # --- コンテキスト管理 ---
     def __enter__(self) -> Self:
         self._in_context = True
         self._committed = False
@@ -103,23 +101,25 @@ class InMemoryUnitOfWork(UnitOfWork):
         self._pending_events.clear()
         return self
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc: BaseException | None, tb: TracebackType | None) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         try:
             if exc_type:
                 self.rollback()
         finally:
             self._in_context = False
 
-    # --- トランザクション操作 ---
     def commit(self) -> None:
-        # 正常に終了する場合のみイベントを確定
-        self._event_sink.events.extend(self._pending_events)
+        self.event_sink.events.extend(self._pending_events)
         self._pending_events.clear()
         self._clear_snapshots()
         self._committed = True
 
     def rollback(self) -> None:
-        # スナップショットから復元し、ペンディングイベント破棄
         self._restore_snapshots()
         self._pending_events.clear()
         self._committed = False
@@ -128,7 +128,6 @@ class InMemoryUnitOfWork(UnitOfWork):
     def committed(self) -> bool:
         return self._committed
 
-    # --- 内部ヘルパ ---
     def buffer_or_sink(self, event: object) -> None:
         if self._in_context:
             self._pending_events.append(event)
@@ -137,13 +136,13 @@ class InMemoryUnitOfWork(UnitOfWork):
 
     def _take_snapshots(self) -> None:
         # 具体型にキャストして内部Dictをスナップショット
-        prod_repo = cast(InMemoryProductRepository, self.products)
-        order_repo = cast(InMemoryOrderRepository, self.orders)
-        inv_repo = cast(InMemoryInventoryRepository, self.inventories)
+        prod_repo = cast("InMemoryProductRepository", self.products)
+        order_repo = cast("InMemoryOrderRepository", self.orders)
+        inv_repo = cast("InMemoryInventoryRepository", self.inventories)
 
-        self._products_snapshot = dict(prod_repo._items)
-        self._orders_snapshot = dict(order_repo._items)
-        self._inventories_snapshot = dict(inv_repo._items)
+        self._products_snapshot = dict(prod_repo.items)
+        self._orders_snapshot = dict(order_repo.items)
+        self._inventories_snapshot = dict(inv_repo.items)
 
     def _restore_snapshots(self) -> None:
         if (
@@ -153,13 +152,13 @@ class InMemoryUnitOfWork(UnitOfWork):
         ):
             return
 
-        prod_repo = cast(InMemoryProductRepository, self.products)
-        order_repo = cast(InMemoryOrderRepository, self.orders)
-        inv_repo = cast(InMemoryInventoryRepository, self.inventories)
+        prod_repo = cast("InMemoryProductRepository", self.products)
+        order_repo = cast("InMemoryOrderRepository", self.orders)
+        inv_repo = cast("InMemoryInventoryRepository", self.inventories)
 
-        prod_repo._items = dict(self._products_snapshot)
-        order_repo._items = dict(self._orders_snapshot)
-        inv_repo._items = dict(self._inventories_snapshot)
+        prod_repo.items = dict(self._products_snapshot)
+        order_repo.items = dict(self._orders_snapshot)
+        inv_repo.items = dict(self._inventories_snapshot)
 
         self._clear_snapshots()
 

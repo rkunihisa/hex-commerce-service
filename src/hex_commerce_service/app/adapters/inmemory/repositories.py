@@ -17,41 +17,41 @@ from hex_commerce_service.app.domain.value_objects import OrderId, Sku
 
 @dataclass(slots=True)
 class InMemoryProductRepository(ProductRepository):
-    _items: dict[Sku, Product] = field(default_factory=dict)
+    items: dict[Sku, Product] = field(default_factory=dict)
 
     def get_by_sku(self, sku: Sku) -> Product | None:
-        return self._items.get(sku)
+        return self.items.get(sku)
 
     def add(self, product: Product) -> None:
-        self._items[product.sku] = product
+        self.items[product.sku] = product
 
     def list(self) -> Iterable[Product]:
-        return list(self._items.values())
+        return list(self.items.values())
 
 
 @dataclass(slots=True)
 class InMemoryOrderRepository(OrderRepository):
-    _items: dict[OrderId, Order] = field(default_factory=dict)
+    items: dict[OrderId, Order] = field(default_factory=dict)
 
     def get(self, order_id: OrderId) -> Order | None:
-        return self._items.get(order_id)
+        return self.items.get(order_id)
 
     def add(self, order: Order) -> None:
-        self._items[order.id] = order
+        self.items[order.id] = order
 
     def list(self) -> Iterable[Order]:
-        return list(self._items.values())
+        return list(self.items.values())
 
 
 @dataclass(slots=True)
 class InMemoryInventoryRepository(InventoryRepository):
-    _items: dict[str, Inventory] = field(default_factory=dict)
+    items: dict[str, Inventory] = field(default_factory=dict)
 
     def get(self, location: str = "default") -> Inventory | None:
-        return self._items.get(location)
+        return self.items.get(location)
 
     def upsert(self, inventory: Inventory) -> None:
-        self._items[inventory.location] = inventory
+        self.items[inventory.location] = inventory
 
     def list(self) -> Iterable[Inventory]:
-        return list(self._items.values())
+        return list(self.items.values())

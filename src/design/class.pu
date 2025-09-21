@@ -1,0 +1,96 @@
+@startuml name classes
+
+package hex_commerce_service.app {
+  package domain {
+    package entities {
+      class Product
+      class Order
+      class OrderLine
+      class Inventory
+    }
+    package value_objects {
+      class Sku
+      class OrderId
+      class Money
+    }
+    package errors {
+      class DomainError
+      class ValidationError
+      class CurrencyMismatchError
+      class NegativeQuantityError
+      class OutOfStockError
+    }
+  }
+  package application {
+    package ports {
+      interface ProductRepository
+      interface OrderRepository
+      interface InventoryRepository
+      interface Clock
+      interface IdGenerator
+      interface EventPublisher
+      interface UnitOfWork
+    }
+    package use_cases {
+      class PlaceOrderUseCase
+      class AllocateStockUseCase
+    }
+    package messages {
+      class OrderPlaced
+      class StockAllocated
+    }
+  }
+  package adapters {
+    package inmemory {
+      class InMemoryProductRepository
+      class InMemoryOrderRepository
+      class InMemoryInventoryRepository
+      class InMemoryClock
+      class InMemoryIdGenerator
+      class InMemoryEventSink
+      class TransactionalEventPublisher
+      class InMemoryUnitOfWork
+    }
+  }
+
+  ' Repository実装
+  ProductRepository <|.. InMemoryProductRepository
+  OrderRepository <|.. InMemoryOrderRepository
+  InventoryRepository <|.. InMemoryInventoryRepository
+
+  ' Error継承
+  DomainError <|-- ValidationError
+  DomainError <|-- CurrencyMismatchError
+  DomainError <|-- NegativeQuantityError
+  DomainError <|-- OutOfStockError
+
+  ' UseCase依存
+  PlaceOrderUseCase ..> ProductRepository
+  PlaceOrderUseCase ..> OrderRepository
+  PlaceOrderUseCase ..> InventoryRepository
+  AllocateStockUseCase ..> InventoryRepository
+  AllocateStockUseCase ..> OrderRepository
+
+  ' Message-Entity依存
+  OrderPlaced ..> OrderId
+  OrderPlaced ..> Money
+  StockAllocated ..> OrderId
+
+  InMemoryClock ..|> Clock
+  InMemoryIdGenerator ..|> IdGenerator
+  TransactionalEventPublisher ..|> EventPublisher
+  InMemoryUnitOfWork ..|> UnitOfWork
+
+  InMemoryUnitOfWork o-- InMemoryProductRepository
+  InMemoryUnitOfWork o-- InMemoryOrderRepository
+  InMemoryUnitOfWork o-- InMemoryInventoryRepository
+  InMemoryUnitOfWork o-- InMemoryEventSink
+  InMemoryUnitOfWork o-- TransactionalEventPublisher
+
+  TransactionalEventPublisher o-- InMemoryUnitOfWork
+
+  InMemoryProductRepository ..|> ProductRepository
+  InMemoryOrderRepository ..|> OrderRepository
+  InMemoryInventoryRepository ..|> InventoryRepository
+}
+@enduml

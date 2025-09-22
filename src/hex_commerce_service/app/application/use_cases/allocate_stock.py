@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from hex_commerce_service.app.application.messages.events import StockAllocated
-from hex_commerce_service.app.application.ports.unit_of_work import UnitOfWork
+from hex_commerce_service.app.application.ports import UnitOfWork
 from hex_commerce_service.app.domain.errors import OutOfStockError, ValidationError
 from hex_commerce_service.app.domain.value_objects import OrderId
 

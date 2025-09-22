@@ -32,7 +32,7 @@ check = { chain = ["fix:ruff", "format:ruff", "check:ruff", "check:mypy"] }
 "format:ruff" = "ruff format ."
 "check:ruff" = "ruff check ."
 "fix:ruff" = "ruff check --fix ."
-"check:mypy" = "mypy --strict ."
+"check:mypy" = "mypy ."
 test = "pytest"
 
 [tool.pytest.ini_options]

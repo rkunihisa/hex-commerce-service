@@ -25,9 +25,6 @@ class InMemoryProductRepository(ProductRepository):
     def add(self, product: Product) -> None:
         self.items[product.sku] = product
 
-    def list(self) -> Iterable[Product]:
-        return list(self.items.values())
-
 
 @dataclass(slots=True)
 class InMemoryOrderRepository(OrderRepository):
@@ -52,6 +49,3 @@ class InMemoryInventoryRepository(InventoryRepository):
 
     def upsert(self, inventory: Inventory) -> None:
         self.items[inventory.location] = inventory
-
-    def list(self) -> Iterable[Inventory]:
-        return list(self.items.values())

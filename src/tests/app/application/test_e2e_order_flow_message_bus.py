@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import cast
-
 from hex_commerce_service.app.adapters.inmemory.notifications import InMemoryNotifier
 from hex_commerce_service.app.adapters.inmemory.system import InMemoryIdGenerator, InMemoryUnitOfWork
 from hex_commerce_service.app.application.message_bus import MessageBus
@@ -48,7 +46,7 @@ def test_e2e_place_order_alloc_notify_via_message_bus() -> None:
     inv.set_on_hand(Sku("ABC-2"), 7)
     uow.inventories.upsert(inv)
 
-    # 受注.PlaceOrder.→ commit で OrderPlaced が発行され、バス経由で在庫引当→通知まで進む
+    # 受注.PlaceOrder → commit で OrderPlaced が発行され、バス経由で在庫引当→通知まで進む
     place = PlaceOrderUseCase(uow=uow, id_gen=InMemoryIdGenerator())
     res = place.execute(
         PlaceOrderCommand(
@@ -71,3 +69,21 @@ def test_e2e_place_order_alloc_notify_via_message_bus() -> None:
 
     # エラーは発生していない
     assert not bus.errors
+
+class CustomBaseException(BaseException):
+    pass
+
+def test_message_bus_catches_base_exception() -> None:
+    bus = MessageBus()
+    event = object()
+
+    def handler(_: object) -> None:
+        raise CustomBaseException("test base exception")
+
+    bus.subscribe(type(event), handler)
+    bus.publish(event)
+
+    assert len(bus.errors) == 1
+    err_event, exc = bus.errors[0]
+    assert err_event is event
+    assert isinstance(exc, CustomBaseException)

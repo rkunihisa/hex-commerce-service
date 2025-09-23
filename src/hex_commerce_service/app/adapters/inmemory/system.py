@@ -1,21 +1,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Self, cast
 from uuid import uuid4
 
+from hex_commerce_service.app.application.message_bus import MessageBus
 from hex_commerce_service.app.domain.entities.inventory import Inventory
 from hex_commerce_service.app.domain.entities.order import Order
 from hex_commerce_service.app.domain.entities.product import Product
 from hex_commerce_service.app.domain.value_objects.sku import Sku
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
     from types import TracebackType
 
 from hex_commerce_service.app.application.ports import (
-    Clock,
     EventPublisher,
     IdGenerator,
     InventoryRepository,
@@ -30,14 +28,6 @@ from .repositories import (
     InMemoryOrderRepository,
     InMemoryProductRepository,
 )
-
-
-@dataclass(slots=True)
-class InMemoryClock(Clock):
-    fixed: datetime | None = None
-
-    def now(self) -> datetime:
-        return self.fixed or datetime.now(tz=UTC)
 
 
 @dataclass(slots=True)
@@ -60,10 +50,6 @@ class TransactionalEventPublisher(EventPublisher):
     def publish(self, event: object) -> None:
         self._uow.buffer_or_sink(event)
 
-    def publish_many(self, events: Iterable[object]) -> None:
-        for e in events:
-            self.publish(e)
-
     # 互換性: testsで `getattr(uow.events, "events", [])` を参照できるように
     @property
     def events(self) -> list[object]:
@@ -79,6 +65,8 @@ class InMemoryUnitOfWork(UnitOfWork):
     # イベントはトランザクション・バッファリング
     event_sink: InMemoryEventSink = field(default_factory=InMemoryEventSink)
     events: EventPublisher = field(init=False)
+
+    message_bus: MessageBus | None = None
 
     _committed: bool = False
     _in_context: bool = False
@@ -114,10 +102,16 @@ class InMemoryUnitOfWork(UnitOfWork):
             self._in_context = False
 
     def commit(self) -> None:
-        self.event_sink.events.extend(self._pending_events)
+        committed_batch = list(self._pending_events)
+        self.event_sink.events.extend(committed_batch)
         self._pending_events.clear()
         self._clear_snapshots()
         self._committed = True
+
+        # 同期ディスパッチ.失敗しても例外はバスが握りつぶす
+        if self.message_bus is not None:
+            for ev in committed_batch:
+                self.message_bus.publish(ev)
 
     def rollback(self) -> None:
         self._restore_snapshots()
@@ -132,7 +126,10 @@ class InMemoryUnitOfWork(UnitOfWork):
         if self._in_context:
             self._pending_events.append(event)
         else:
-            self._event_sink.events.append(event)
+            self.event_sink.events.append(event)
+            # withブロック外でpublishされた場合も即ディスパッチ
+            if self.message_bus is not None:
+                self.message_bus.publish(event)
 
     def _take_snapshots(self) -> None:
         # 具体型にキャストして内部Dictをスナップショット

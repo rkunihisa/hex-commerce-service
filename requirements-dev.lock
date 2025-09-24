@@ -12,6 +12,8 @@
 -e file:.
 coverage==7.10.6
     # via pytest-cov
+greenlet==3.2.4
+    # via sqlalchemy
 iniconfig==2.1.0
     # via pytest
 mypy==1.17.1
@@ -30,5 +32,8 @@ pytest==8.4.2
     # via pytest-cov
 pytest-cov==6.2.1
 ruff==0.12.12
+sqlalchemy==2.0.43
+    # via hex-commerce-service
 typing-extensions==4.15.0
     # via mypy
+    # via sqlalchemy

@@ -3,7 +3,9 @@ name = "hex-commerce-service"
 version = "0.1.0"
 description = ""
 authors = []
-dependencies = []
+dependencies = [
+    "sqlalchemy>=2.0.43",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
 

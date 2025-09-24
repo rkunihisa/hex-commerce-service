@@ -10,3 +10,9 @@
 #   universal: false
 
 -e file:.
+greenlet==3.2.4
+    # via sqlalchemy
+sqlalchemy==2.0.43
+    # via hex-commerce-service
+typing-extensions==4.15.0
+    # via sqlalchemy

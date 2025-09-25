@@ -5,6 +5,7 @@ description = ""
 authors = []
 dependencies = [
     "sqlalchemy>=2.0.43",
+    "alembic>=1.16.5",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"

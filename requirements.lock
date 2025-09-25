@@ -12,6 +12,8 @@
 -e file:.
 alembic==1.16.5
     # via hex-commerce-service
+asyncpg==0.30.0
+    # via hex-commerce-service
 greenlet==3.2.4
     # via sqlalchemy
 mako==1.3.10

@@ -12,6 +12,8 @@
 -e file:.
 alembic==1.16.5
     # via hex-commerce-service
+asyncpg==0.30.0
+    # via hex-commerce-service
 coverage==7.10.6
     # via pytest-cov
 greenlet==3.2.4

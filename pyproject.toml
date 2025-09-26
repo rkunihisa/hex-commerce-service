@@ -38,6 +38,7 @@ check = { chain = ["fix:ruff", "format:ruff", "check:ruff", "check:mypy"] }
 "fix:ruff" = "ruff check --fix ."
 "check:mypy" = "mypy ."
 test = "pytest"
+"alembic:upgrade" = "alembic upgrade head"
 
 [tool.pytest.ini_options]
 testpaths = ["src/tests"]

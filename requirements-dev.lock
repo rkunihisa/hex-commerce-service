@@ -37,7 +37,9 @@ pluggy==1.6.0
 pygments==2.19.2
     # via pytest
 pytest==8.4.2
+    # via pytest-asyncio
     # via pytest-cov
+pytest-asyncio==1.2.0
 pytest-cov==6.2.1
 ruff==0.12.12
 sqlalchemy==2.0.43
@@ -46,4 +48,5 @@ sqlalchemy==2.0.43
 typing-extensions==4.15.0
     # via alembic
     # via mypy
+    # via pytest-asyncio
     # via sqlalchemy

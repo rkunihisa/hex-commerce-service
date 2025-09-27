@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = []
 dependencies = [
-    "sqlalchemy>=2.0.43",
+    "sqlalchemy[asyncio]>=2.0.43",
     "alembic>=1.16.5",
     "asyncpg>=0.30.0",
 ]
@@ -22,6 +22,7 @@ dev-dependencies = [
     "mypy>=1.17.1",
     "pytest>=8.4.2",
     "pytest-cov>=6.2.1",
+    "pytest-asyncio>=1.2.0",
 ]
 
 [tool.hatch.metadata]
@@ -54,4 +55,5 @@ omit = [
     "*/__init__.py",
     "*/tests/*",
     "main.py",
+    "*/alembic/*",
 ]

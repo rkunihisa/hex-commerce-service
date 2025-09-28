@@ -40,6 +40,7 @@ check = { chain = ["fix:ruff", "format:ruff", "check:ruff", "check:mypy"] }
 "check:mypy" = "mypy ."
 test = "pytest"
 "alembic:upgrade" = "alembic upgrade head"
+"bench" = "python src/scripts/bench/seed_and_query.py"
 
 [tool.pytest.ini_options]
 testpaths = ["src/tests"]

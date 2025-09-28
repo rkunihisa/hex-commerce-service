@@ -1,7 +1,10 @@
 target-version = "py313"
 line-length = 100
 indent-width = 4
-exclude = ["src/tests"]
+exclude = [
+  "src/tests",
+  "src/scripts",
+  ]
 
 [lint]
 select = ["ALL"]

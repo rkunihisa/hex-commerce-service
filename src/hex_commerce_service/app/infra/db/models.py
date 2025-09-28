@@ -2,7 +2,17 @@ from __future__ import annotations
 
 from datetime import datetime  # noqa: TC003
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, Numeric, String, Text, text
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    text,
+)
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -36,6 +46,11 @@ class OrderModel(Base):
         passive_deletes=True,
     )
 
+    __table_args__ = (
+        Index("ix_orders_created_at", "created_at"),
+        Index("ix_orders_currency_created_at", "currency", "created_at"),
+    )
+
 
 class OrderLineModel(Base):
     __tablename__ = "order_lines"
@@ -56,7 +71,11 @@ class OrderLineModel(Base):
 
     order: Mapped[OrderModel] = relationship(back_populates="lines")
 
-    __table_args__ = (CheckConstraint("quantity > 0", name="ck_order_lines_quantity_positive"),)
+    __table_args__ = (
+        CheckConstraint("quantity > 0", name="ck_order_lines_quantity_positive"),
+        Index("ix_order_lines_sku", "sku"),
+        Index("ix_order_lines_order_id_sku", "order_id", "sku"),
+    )
 
 
 class InventoryLocationModel(Base):
@@ -85,4 +104,5 @@ class InventoryItemModel(Base):
 
     __table_args__ = (
         CheckConstraint("on_hand >= 0", name="ck_inventory_items_on_hand_non_negative"),
+        Index("ix_inventory_items_sku", "sku"),
     )

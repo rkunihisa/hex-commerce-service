@@ -12,6 +12,8 @@
 -e file:.
 alembic==1.16.5
     # via hex-commerce-service
+annotated-types==0.7.0
+    # via pydantic
 asyncpg==0.30.0
     # via hex-commerce-service
 coverage==7.10.6
@@ -34,6 +36,10 @@ pathspec==0.12.1
 pluggy==1.6.0
     # via pytest
     # via pytest-cov
+pydantic==2.11.9
+    # via hex-commerce-service
+pydantic-core==2.33.2
+    # via pydantic
 pygments==2.19.2
     # via pytest
 pytest==8.4.2
@@ -48,5 +54,10 @@ sqlalchemy==2.0.43
 typing-extensions==4.15.0
     # via alembic
     # via mypy
+    # via pydantic
+    # via pydantic-core
     # via pytest-asyncio
     # via sqlalchemy
+    # via typing-inspection
+typing-inspection==0.4.1
+    # via pydantic

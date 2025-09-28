@@ -10,7 +10,7 @@ from hex_commerce_service.app.adapters.outbound.sqlalchemy_repositories import (
     SqlAlchemyOrderRepository,
     SqlAlchemyProductRepository,
 )
-from tests.factories import OrderFactory, ProductFactory
+from tests.factories.domain_builders import OrderFactory, ProductFactory
 
 DB_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://app:app@localhost:5432/appdb")
 

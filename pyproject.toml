@@ -57,4 +57,5 @@ omit = [
     "*/tests/*",
     "main.py",
     "*/alembic/*",
+    "*/scripts/*",
 ]

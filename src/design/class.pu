@@ -50,6 +50,10 @@ package hex_commerce_service.app {
       class InMemoryUnitOfWork
     }
   }
+  package infra {
+    package db {
+    }
+  }
 
   ' Repository実装
   ProductRepository <|.. InMemoryProductRepository

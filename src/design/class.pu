@@ -26,7 +26,6 @@ package hex_commerce_service.app {
       interface ProductRepository
       interface OrderRepository
       interface InventoryRepository
-      interface Clock
       interface IdGenerator
       interface EventPublisher
       interface UnitOfWork
@@ -45,11 +44,14 @@ package hex_commerce_service.app {
       class InMemoryProductRepository
       class InMemoryOrderRepository
       class InMemoryInventoryRepository
-      class InMemoryClock
       class InMemoryIdGenerator
       class InMemoryEventSink
       class TransactionalEventPublisher
       class InMemoryUnitOfWork
+    }
+  }
+  package infra {
+    package db {
     }
   }
 
@@ -76,7 +78,6 @@ package hex_commerce_service.app {
   OrderPlaced ..> Money
   StockAllocated ..> OrderId
 
-  InMemoryClock ..|> Clock
   InMemoryIdGenerator ..|> IdGenerator
   TransactionalEventPublisher ..|> EventPublisher
   InMemoryUnitOfWork ..|> UnitOfWork

@@ -18,6 +18,17 @@ def get_uow() -> InMemoryUnitOfWork:  # この関数は app.dependency_overrides
     raise RuntimeError("dependency not provided")
 
 
+@router.post(
+    "",
+    response_model=ProductOut,
+    status_code=201,
+)
+def create_product_endpoint(
+    payload: ProductCreate, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]
+) -> ProductOut:
+    return create_product(payload, uow)
+
+
 def create_product(
     payload: ProductCreate, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]
 ) -> ProductOut:

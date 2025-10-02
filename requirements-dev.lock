@@ -14,12 +14,18 @@ alembic==1.16.5
     # via hex-commerce-service
 annotated-types==0.7.0
     # via pydantic
+anyio==4.11.0
+    # via starlette
 asyncpg==0.30.0
     # via hex-commerce-service
 coverage==7.10.6
     # via pytest-cov
+fastapi==0.118.0
+    # via hex-commerce-service
 greenlet==3.2.4
     # via sqlalchemy
+idna==3.10
+    # via anyio
 iniconfig==2.1.0
     # via pytest
 mako==1.3.10
@@ -37,6 +43,7 @@ pluggy==1.6.0
     # via pytest
     # via pytest-cov
 pydantic==2.11.9
+    # via fastapi
     # via hex-commerce-service
 pydantic-core==2.33.2
     # via pydantic
@@ -48,16 +55,23 @@ pytest==8.4.2
 pytest-asyncio==1.2.0
 pytest-cov==6.2.1
 ruff==0.12.12
+sniffio==1.3.1
+    # via anyio
 sqlalchemy==2.0.43
     # via alembic
     # via hex-commerce-service
+starlette==0.48.0
+    # via fastapi
 typing-extensions==4.15.0
     # via alembic
+    # via anyio
+    # via fastapi
     # via mypy
     # via pydantic
     # via pydantic-core
     # via pytest-asyncio
     # via sqlalchemy
+    # via starlette
     # via typing-inspection
 typing-inspection==0.4.1
     # via pydantic

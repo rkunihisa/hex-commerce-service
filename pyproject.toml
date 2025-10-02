@@ -9,6 +9,7 @@ dependencies = [
     "asyncpg>=0.30.0",
     "pydantic>=2.11.9",
     "fastapi>=0.118.0",
+    "uvicorn[standard]>=0.37.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
@@ -25,6 +26,7 @@ dev-dependencies = [
     "pytest>=8.4.2",
     "pytest-cov>=6.2.1",
     "pytest-asyncio>=1.2.0",
+    "httpx>=0.28.1",
 ]
 
 [tool.hatch.metadata]
@@ -43,6 +45,7 @@ check = { chain = ["fix:ruff", "format:ruff", "check:ruff", "check:mypy"] }
 test = "pytest"
 "alembic:upgrade" = "alembic upgrade head"
 "bench" = "python src/scripts/bench/seed_and_query.py"
+api = "uvicorn hex_commerce_service.app.adapters.inbound.api.app:create_app --factory --reload"
 
 [tool.pytest.ini_options]
 testpaths = ["src/tests"]

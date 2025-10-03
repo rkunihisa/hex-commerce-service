@@ -60,24 +60,45 @@ def create_access_token(
 def decode_token(token: str, settings: JWTSettings | None = None) -> UserPrincipal:
     s = settings or JWTSettings()
     try:
-        payload = jwt.decode(token, s.secret, algorithms=[s.algorithm], options={"require": ["exp", "iat", "sub", "jti"]})
+        payload = jwt.decode(
+            token, s.secret,
+            algorithms=[s.algorithm],
+            options={"require": ["exp", "iat", "sub", "jti"]}
+        )
     except InvalidTokenError as exc:  # signature, exp, iat, etc.
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token") from exc
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="invalid token"
+        ) from exc
 
     jti = payload.get("jti")
     if not isinstance(jti, str):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token (no jti)")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="invalid token (no jti)"
+        )
 
     if jti in _REVOKED_JTI:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="token revoked")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="token revoked"
+        )
 
     sub = payload.get("sub")
     roles_raw = payload.get("roles", [])
     iat = payload.get("iat")
     exp = payload.get("exp")
 
-    if not isinstance(sub, str) or not isinstance(roles_raw, list) or not isinstance(iat, int) or not isinstance(exp, int):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid token payload")
+    if (
+        not isinstance(sub, str)
+        or not isinstance(roles_raw, list)
+        or not isinstance(iat, int)
+        or not isinstance(exp, int)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="invalid token payload"
+        )
 
     roles: set[Role] = set()
     for r in roles_raw:
@@ -109,7 +130,7 @@ async def bearer_credentials(request: Request) -> HTTPAuthorizationCredentials:
 def get_current_user(
         settings: JWTSettings | None = None
     ) -> Callable[[HTTPAuthorizationCredentials], UserPrincipal]:
-    def _dep(creds: HTTPAuthorizationCredentials = Depends(bearer_credentials)) -> UserPrincipal:
+    def _dep(creds: HTTPAuthorizationCredentials = Depends(bearer_credentials)) -> UserPrincipal:  # noqa: B008
         return decode_token(creds.credentials, settings)
     return _dep
 
@@ -117,7 +138,7 @@ def get_current_user(
 def require_role(
         role: Role, settings: JWTSettings | None = None
     ) -> Callable[[UserPrincipal], UserPrincipal]:
-    def _dep(user: UserPrincipal = Depends(get_current_user(settings))) -> UserPrincipal:
+    def _dep(user: UserPrincipal = Depends(get_current_user(settings))) -> UserPrincipal:  # noqa: B008
         if role not in user.roles:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="forbidden")
         return user
@@ -127,6 +148,6 @@ def require_role(
 def require_authenticated(
         settings: JWTSettings | None = None
     ) -> Callable[[UserPrincipal], UserPrincipal]:
-    def _dep(user: UserPrincipal = Depends(get_current_user(settings))) -> UserPrincipal:
+    def _dep(user: UserPrincipal = Depends(get_current_user(settings))) -> UserPrincipal:  # noqa: B008
         return user
     return _dep

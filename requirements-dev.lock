@@ -65,6 +65,8 @@ pydantic-core==2.33.2
     # via pydantic
 pygments==2.19.2
     # via pytest
+pyjwt==2.10.1
+    # via hex-commerce-service
 pytest==8.4.2
     # via pytest-asyncio
     # via pytest-cov

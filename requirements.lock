@@ -40,6 +40,8 @@ pydantic==2.11.9
     # via hex-commerce-service
 pydantic-core==2.33.2
     # via pydantic
+pyjwt==2.10.1
+    # via hex-commerce-service
 python-dotenv==1.1.1
     # via uvicorn
 pyyaml==6.0.3

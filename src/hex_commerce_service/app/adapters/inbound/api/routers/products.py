@@ -5,6 +5,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from hex_commerce_service.app.adapters.inbound.api.auth.security import require_role
 from hex_commerce_service.app.adapters.inbound.api.dtos import ProductCreate, ProductOut
 from hex_commerce_service.app.adapters.inbound.api.errors import to_http
 from hex_commerce_service.app.adapters.inmemory.system import InMemoryUnitOfWork
@@ -18,19 +19,18 @@ def get_uow() -> InMemoryUnitOfWork:  # この関数は app.dependency_overrides
     raise RuntimeError("dependency not provided")
 
 
+require_admin = require_role("admin")
+
+
 @router.post(
     "",
     response_model=ProductOut,
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_admin)],
 )
-def create_product_endpoint(
-    payload: ProductCreate, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]
-) -> ProductOut:
-    return create_product(payload, uow)
-
-
 def create_product(
-    payload: ProductCreate, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]
+    payload: ProductCreate,
+    uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)],
 ) -> ProductOut:
     try:
         product = Product(
@@ -51,8 +51,11 @@ def create_product(
         raise to_http(exc) from exc
 
 
-@router.get("/{sku}", response_model=ProductOut)
-def get_product(sku: str, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]) -> ProductOut:
+@router.get("/{sku}", response_model=ProductOut, dependencies=[Depends(require_role("user"))])
+def get_product(
+    sku: str,
+    uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)],
+) -> ProductOut:
     prod = uow.products.get_by_sku(Sku(sku))
     if not prod:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="product not found")

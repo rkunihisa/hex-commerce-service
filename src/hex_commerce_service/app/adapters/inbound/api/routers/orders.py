@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
+from hex_commerce_service.app.adapters.inbound.api.auth.security import require_role
 from hex_commerce_service.app.adapters.inbound.api.dtos import (
     MoneyOut,
     PlaceOrderIn,
@@ -36,7 +37,16 @@ def get_id_gen() -> InMemoryIdGenerator:
     raise RuntimeError("dependency not provided")
 
 
-@router.post("", response_model=PlaceOrderOut, status_code=status.HTTP_201_CREATED)
+require_user = require_role("user")
+require_admin = require_role("admin")
+
+
+@router.post(
+    "",
+    response_model=PlaceOrderOut,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_user)],
+)
 def place_order(
     body: PlaceOrderIn,
     uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)],
@@ -54,7 +64,9 @@ def place_order(
         raise to_http(exc) from exc
 
 
-@router.post("/{order_id}/allocate", status_code=status.HTTP_200_OK)
+@router.post(
+    "/{order_id}/allocate", status_code=status.HTTP_200_OK, dependencies=[Depends(require_admin)]
+)
 def allocate_stock(
     order_id: str,
     uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)],

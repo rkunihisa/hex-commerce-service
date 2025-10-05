@@ -4,6 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from hex_commerce_service.app.adapters.inbound.api.auth.security import require_role
 from hex_commerce_service.app.adapters.inbound.api.dtos import InventoryOut, InventoryUpsertIn
 from hex_commerce_service.app.adapters.inbound.api.errors import to_http
 from hex_commerce_service.app.adapters.inmemory.system import InMemoryUnitOfWork
@@ -17,7 +18,11 @@ def get_uow() -> InMemoryUnitOfWork:
     raise RuntimeError("dependency not provided")
 
 
-@router.put("/{location}", response_model=InventoryOut)
+require_admin = require_role("admin")
+require_user = require_role("user")
+
+
+@router.put("/{location}", response_model=InventoryOut, dependencies=[Depends(require_admin)])
 def upsert_inventory(
     location: str, body: InventoryUpsertIn, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]
 ) -> InventoryOut:
@@ -36,7 +41,7 @@ def upsert_inventory(
         raise to_http(exc) from exc
 
 
-@router.get("/{location}", response_model=InventoryOut)
+@router.get("/{location}", response_model=InventoryOut, dependencies=[Depends(require_user)])
 def get_inventory(
     location: str, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]
 ) -> InventoryOut:

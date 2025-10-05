@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
+from hex_commerce_service.app.adapters.inbound.api.auth.router import router as auth_router
 from hex_commerce_service.app.adapters.inbound.api.routers import inventory, orders, products
 from hex_commerce_service.app.adapters.inmemory.system import (
     InMemoryIdGenerator,
@@ -27,15 +28,13 @@ def create_app() -> FastAPI:
     def get_id_gen() -> InMemoryIdGenerator:
         return app.state.id_gen
 
-    def get_bus() -> MessageBus:
-        return app.state.bus
-
     app.dependency_overrides[products.get_uow] = get_uow
     app.dependency_overrides[orders.get_uow] = get_uow
     app.dependency_overrides[orders.get_id_gen] = get_id_gen
     app.dependency_overrides[inventory.get_uow] = get_uow
 
-    # ルータ
+    # Routers
+    app.include_router(auth_router, prefix="/auth", tags=["auth"])
     app.include_router(products.router, prefix="/products", tags=["products"])
     app.include_router(orders.router, prefix="/orders", tags=["orders"])
     app.include_router(inventory.router, prefix="/inventory", tags=["inventory"])

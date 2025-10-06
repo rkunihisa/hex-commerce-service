@@ -4,9 +4,9 @@ import json
 
 import typer
 
+from . import inventory as inventory_cmd
 from . import orders as orders_cmd
 from . import products as products_cmd
-from . import inventory as inventory_cmd
 
 app = typer.Typer(help="Hex Commerce CLI (in-memory)")
 
@@ -21,11 +21,8 @@ def main(
     ctx: typer.Context,
     *,
     json_output: bool = typer.Option(
-        "--json",
-        help="Output JSON where applicable",
-        is_flag=True,
-        show_default=False
-    )
+        "--json", help="Output JSON where applicable", is_flag=True, show_default=False
+    ),
 ) -> None:
     ctx.obj = {"json": bool(json_output)}
 

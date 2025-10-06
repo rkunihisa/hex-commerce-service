@@ -11,6 +11,7 @@ dependencies = [
     "fastapi>=0.118.0",
     "uvicorn[standard]>=0.37.0",
     "pyjwt>=2.10.1",
+    "typer>=0.19.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
@@ -47,6 +48,7 @@ test = "pytest"
 "alembic:upgrade" = "alembic upgrade head"
 "bench" = "python src/scripts/bench/seed_and_query.py"
 api = "uvicorn hex_commerce_service.app.adapters.inbound.api.app:create_app --factory --reload"
+cli = "python -m app.adapters.inbound.cli.app"
 
 [tool.pytest.ini_options]
 testpaths = ["src/tests"]

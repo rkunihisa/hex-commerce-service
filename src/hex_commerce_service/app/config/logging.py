@@ -71,6 +71,7 @@ def configure_logging(settings: Settings) -> None:
 def _service_injector(settings: Settings) -> Iterable:
     # inject service/app info into every log
     return [
-        structlog.processors
-            .CallableWrapperProcessor(lambda _, __, ed: _add_service(ed, settings.app_name)),
+        structlog.processors.CallableWrapperProcessor(
+            lambda _, __, ed: _add_service(ed, settings.app_name)
+        ),
     ]

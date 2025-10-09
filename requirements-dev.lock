@@ -66,8 +66,11 @@ pluggy==1.6.0
 pydantic==2.11.9
     # via fastapi
     # via hex-commerce-service
+    # via pydantic-settings
 pydantic-core==2.33.2
     # via pydantic
+pydantic-settings==2.11.0
+    # via hex-commerce-service
 pygments==2.19.2
     # via pytest
     # via rich
@@ -79,6 +82,7 @@ pytest==8.4.2
 pytest-asyncio==1.2.0
 pytest-cov==6.2.1
 python-dotenv==1.1.1
+    # via pydantic-settings
     # via uvicorn
 pyyaml==6.0.3
     # via uvicorn
@@ -94,6 +98,8 @@ sqlalchemy==2.0.43
     # via hex-commerce-service
 starlette==0.48.0
     # via fastapi
+structlog==25.4.0
+    # via hex-commerce-service
 typer==0.19.2
     # via hex-commerce-service
 typing-extensions==4.15.0
@@ -110,6 +116,7 @@ typing-extensions==4.15.0
     # via typing-inspection
 typing-inspection==0.4.1
     # via pydantic
+    # via pydantic-settings
 uvicorn==0.37.0
     # via hex-commerce-service
 uvloop==0.21.0

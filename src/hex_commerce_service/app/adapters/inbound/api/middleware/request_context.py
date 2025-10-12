@@ -27,8 +27,6 @@ def _ensure_id(value: str | None) -> str:
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
-    """Bind request-scoped IDs into structlog contextvars and response headers."""
-
     @staticmethod
     async def dispatch(request: Request, call_next: RequestResponseEndpoint) -> Response:
         settings = get_settings()

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import structlog
 from fastapi import FastAPI
 
 from hex_commerce_service.app.adapters.inbound.api.auth.router import router as auth_router
@@ -19,6 +20,7 @@ from hex_commerce_service.app.config.settings import get_settings
 def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging(settings)
+
     app = FastAPI(title="Hex Commerce API", version="0.1.0")
 
     # シンプルなサービスロケータ(in-memory)。本番はDI/Containerに差し替え前提。
@@ -50,8 +52,8 @@ def create_app() -> FastAPI:
     app.include_router(orders.router, prefix="/orders", tags=["orders"])
     app.include_router(inventory.router, prefix="/inventory", tags=["inventory"])
 
-    @app.get("/health", tags=["health"])
     def health() -> dict[str, str]:
+        structlog.get_logger("health").info("health_checked")
         return {"status": "ok"}
 
     return app

@@ -1,5 +1,5 @@
 target-version = "py313"
-line-length = 100
+line-length = 140
 indent-width = 4
 exclude = [
   "src/tests",

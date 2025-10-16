@@ -142,11 +142,7 @@ class InMemoryUnitOfWork(UnitOfWork):
         self._inventories_snapshot = dict(inv_repo.items)
 
     def _restore_snapshots(self) -> None:
-        if (
-            self._products_snapshot is None
-            or self._orders_snapshot is None
-            or self._inventories_snapshot is None
-        ):
+        if self._products_snapshot is None or self._orders_snapshot is None or self._inventories_snapshot is None:
             return
 
         prod_repo = cast("InMemoryProductRepository", self.products)

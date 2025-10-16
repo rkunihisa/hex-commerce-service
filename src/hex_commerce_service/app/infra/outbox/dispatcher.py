@@ -26,9 +26,7 @@ class OutboxDispatcher:
     async def run_once(self) -> int:
         async with self.sessionmaker() as session:
             store = OutboxStore(session)
-            messages = await store.claim_batch(
-                owner=self.owner, batch_size=self.batch_size, lease_seconds=self.lease_seconds
-            )
+            messages = await store.claim_batch(owner=self.owner, batch_size=self.batch_size, lease_seconds=self.lease_seconds)
             if not messages:
                 return 0
 
@@ -41,22 +39,16 @@ class OutboxDispatcher:
                     if after_errors > before_errors:
                         # last error belongs to this publish; mark failed
                         err = str(self.bus.errors[-1][1])
-                        await store.mark_failed(
-                            msg, err, backoff_seconds=min(60, 2 ** min(msg.attempt_count, 5))
-                        )
+                        await store.mark_failed(msg, err, backoff_seconds=min(60, 2 ** min(msg.attempt_count, 5)))
                     else:
                         await store.mark_sent(msg)
                         self.delivered.append(event)
                 except Exception as exc:
-                    await store.mark_failed(
-                        msg, str(exc), backoff_seconds=min(60, 2 ** min(msg.attempt_count, 5))
-                    )
+                    await store.mark_failed(msg, str(exc), backoff_seconds=min(60, 2 ** min(msg.attempt_count, 5)))
             await session.commit()
             return len(messages)
 
-    async def run_forever(
-        self, interval_seconds: float = 2.0, stop_event: asyncio.Event | None = None
-    ) -> None:
+    async def run_forever(self, interval_seconds: float = 2.0, stop_event: asyncio.Event | None = None) -> None:
         stop = stop_event or asyncio.Event()
         while not stop.is_set():
             try:

@@ -57,9 +57,7 @@ class OutboxStore:
             # 再度実行に備え再開
             await self.session.begin()
 
-    async def claim_batch(
-        self, owner: str, batch_size: int = 50, lease_seconds: int = 30
-    ) -> list[OutboxMessageModel]:
+    async def claim_batch(self, owner: str, batch_size: int = 50, lease_seconds: int = 30) -> list[OutboxMessageModel]:
         now = datetime.now(tz=datetime.UTC)
         lease_until = now + timedelta(seconds=lease_seconds)
         async with self.session.begin():
@@ -69,8 +67,7 @@ class OutboxStore:
                 .where(
                     OutboxMessageModel.state == "pending",
                     OutboxMessageModel.available_at <= now,
-                    (OutboxMessageModel.lock_until.is_(None))
-                    | (OutboxMessageModel.lock_until < now),
+                    (OutboxMessageModel.lock_until.is_(None)) | (OutboxMessageModel.lock_until < now),
                 )
                 .order_by(OutboxMessageModel.id.asc())
                 .with_for_update(skip_locked=True)
@@ -95,14 +92,10 @@ class OutboxStore:
         msg.last_error = None
         await self.session.flush()
 
-    async def mark_failed(
-        self, msg: OutboxMessageModel, error: str, backoff_seconds: int = 5
-    ) -> None:
+    async def mark_failed(self, msg: OutboxMessageModel, error: str, backoff_seconds: int = 5) -> None:
         msg.attempt_count += 1
         msg.last_error = error[:2000]
         msg.lock_owner = None
         msg.lock_until = None
-        msg.available_at = datetime.now(tz=datetime.UTC) + timedelta(
-            seconds=max(1, backoff_seconds)
-        )
+        msg.available_at = datetime.now(tz=datetime.UTC) + timedelta(seconds=max(1, backoff_seconds))
         await self.session.flush()

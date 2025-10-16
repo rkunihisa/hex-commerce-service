@@ -32,9 +32,7 @@ class OutboxMessageModel(Base):
 
     state: Mapped[str] = mapped_column(String(16), nullable=False, server_default=text("'pending'"))
     occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    available_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP")
-    )
+    available_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP"))
     dispatched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     attempt_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
@@ -43,9 +41,7 @@ class OutboxMessageModel(Base):
     lock_owner: Mapped[str | None] = mapped_column(String(64), nullable=True)
     lock_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP")
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP"))
 
     __table_args__ = (
         UniqueConstraint("event_type", "idempotency_key", name="uq_outbox_type_idempo"),

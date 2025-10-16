@@ -49,7 +49,5 @@ class Inventory:
 
     def allocate(self, sku: Sku, qty: int) -> None:
         if not self.can_fulfill(sku, qty):
-            raise OutOfStockError(
-                f"requested {qty} of {sku} exceeds availability {self.available(sku)}"
-            )
+            raise OutOfStockError(f"requested {qty} of {sku} exceeds availability {self.available(sku)}")
         self._on_hand[sku] = self.available(sku) - qty

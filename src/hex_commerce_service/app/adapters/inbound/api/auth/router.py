@@ -19,9 +19,7 @@ class TestTokenIn(BaseModel):
         return ["user"]
 
     roles: list[Literal["admin", "user"]] = Field(default_factory=default_roles)
-    expires_in: int | None = Field(
-        default=None, description="seconds to expire (default from settings)"
-    )
+    expires_in: int | None = Field(default=None, description="seconds to expire (default from settings)")
 
 
 class TokenOut(BaseModel):
@@ -32,9 +30,7 @@ class TokenOut(BaseModel):
 @router.post("/token/test", response_model=TokenOut, status_code=status.HTTP_200_OK)
 def issue_test_token(body: TestTokenIn) -> TokenOut:
     ttl = timedelta(seconds=body.expires_in) if body.expires_in else None
-    token = create_access_token(
-        subject=body.sub, roles=body.roles, expires_delta=ttl, settings=JWTSettings()
-    )
+    token = create_access_token(subject=body.sub, roles=body.roles, expires_delta=ttl, settings=JWTSettings())
     return TokenOut(access_token=token)
 
 

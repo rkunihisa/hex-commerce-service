@@ -31,10 +31,7 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
     async def dispatch(request: Request, call_next: RequestResponseEndpoint) -> Response:
         settings = get_settings()
         req_id = _ensure_id(request.headers.get(settings.request_id_header))
-        corr_id = _ensure_id(
-            request.headers.get(settings.correlation_id_header)
-            or request.headers.get(settings.request_id_header)
-        )
+        corr_id = _ensure_id(request.headers.get(settings.correlation_id_header) or request.headers.get(settings.request_id_header))
 
         # Bind to structlog contextvars
         structlog.contextvars.clear_contextvars()

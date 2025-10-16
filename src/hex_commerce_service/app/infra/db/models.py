@@ -36,9 +36,7 @@ class OrderModel(Base):
 
     id: Mapped[str] = mapped_column(PG_UUID(as_uuid=False), primary_key=True)
     currency: Mapped[str] = mapped_column(String(3), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"), nullable=False)
 
     lines: Mapped[list[OrderLineModel]] = relationship(
         back_populates="order",
@@ -62,9 +60,7 @@ class OrderLineModel(Base):
         index=True,
         nullable=False,
     )
-    sku: Mapped[str] = mapped_column(
-        String(64), ForeignKey("products.sku", ondelete="RESTRICT"), nullable=False
-    )
+    sku: Mapped[str] = mapped_column(String(64), ForeignKey("products.sku", ondelete="RESTRICT"), nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     unit_price_amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
     currency: Mapped[str] = mapped_column(String(3), nullable=False)
@@ -92,12 +88,8 @@ class InventoryLocationModel(Base):
 class InventoryItemModel(Base):
     __tablename__ = "inventory_items"
 
-    location: Mapped[str] = mapped_column(
-        String(64), ForeignKey("inventory_locations.location", ondelete="CASCADE"), primary_key=True
-    )
-    sku: Mapped[str] = mapped_column(
-        String(64), ForeignKey("products.sku", ondelete="RESTRICT"), primary_key=True
-    )
+    location: Mapped[str] = mapped_column(String(64), ForeignKey("inventory_locations.location", ondelete="CASCADE"), primary_key=True)
+    sku: Mapped[str] = mapped_column(String(64), ForeignKey("products.sku", ondelete="RESTRICT"), primary_key=True)
     on_hand: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
 
     location_ref: Mapped[InventoryLocationModel] = relationship(back_populates="items")

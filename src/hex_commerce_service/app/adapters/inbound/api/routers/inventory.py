@@ -23,9 +23,7 @@ require_user = require_role("user")
 
 
 @router.put("/{location}", response_model=InventoryOut, dependencies=[Depends(require_admin)])
-def upsert_inventory(
-    location: str, body: InventoryUpsertIn, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]
-) -> InventoryOut:
+def upsert_inventory(location: str, body: InventoryUpsertIn, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]) -> InventoryOut:
     try:
         inv = Inventory(location=location)
         for item in body.items:
@@ -42,9 +40,7 @@ def upsert_inventory(
 
 
 @router.get("/{location}", response_model=InventoryOut, dependencies=[Depends(require_user)])
-def get_inventory(
-    location: str, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]
-) -> InventoryOut:
+def get_inventory(location: str, uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)]) -> InventoryOut:
     inv = uow.inventories.get(location)
     if not inv:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="inventory not found")

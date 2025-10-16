@@ -36,10 +36,7 @@ class AllocateStockUseCase:
         # 事前チェック。全行を満たせるか。
         for line in order.lines:
             if inventory.available(line.sku) < line.quantity:
-                raise OutOfStockError(
-                    f"insufficient stock for {line.sku}: "
-                    f"need {line.quantity}, have {inventory.available(line.sku)}"
-                )
+                raise OutOfStockError(f"insufficient stock for {line.sku}: need {line.quantity}, have {inventory.available(line.sku)}")
 
         # 実際の割当。原子的に近い挙動。
         with self._uow:

@@ -57,17 +57,13 @@ def place_order(ctx: typer.Context, item: list[str] | None = None) -> None:
 
 
 @app.command("allocate")
-def allocate(
-    ctx: typer.Context, order_id: str = typer.Option(..., "--order-id", "-o", help="Order ID")
-) -> None:
+def allocate(ctx: typer.Context, order_id: str = typer.Option(..., "--order-id", "-o", help="Order ID")) -> None:
     svc = get_services()
     try:
         uc = AllocateStockUseCase(uow=svc.uow)
         uc.execute(AllocateStockCommand(order_id=OrderId.parse(order_id)))
         if ctx.obj and ctx.obj.get("json"):
-            typer.echo(
-                json.dumps({"status": "allocated", "order_id": order_id}, ensure_ascii=False)
-            )
+            typer.echo(json.dumps({"status": "allocated", "order_id": order_id}, ensure_ascii=False))
         else:
             typer.echo({"status": "allocated", "order_id": order_id})
     except (OutOfStock, DomainError, ValidationError) as exc:

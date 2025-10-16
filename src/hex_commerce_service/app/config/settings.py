@@ -23,14 +23,10 @@ class Settings(BaseSettings):
 
     # HTTP / API
     request_id_header: str = Field(default=os.getenv("REQUEST_ID_HEADER", "x-request-id"))
-    correlation_id_header: str = Field(
-        default=os.getenv("CORRELATION_ID_HEADER", "x-correlation-id")
-    )
+    correlation_id_header: str = Field(default=os.getenv("CORRELATION_ID_HEADER", "x-correlation-id"))
 
     # DB (asyncpg URL, Day 8)
-    database_url: str = Field(
-        default=os.getenv("DATABASE_URL", "postgresql+asyncpg://app:app@localhost:5432/appdb")
-    )
+    database_url: str = Field(default=os.getenv("DATABASE_URL", "postgresql+asyncpg://app:app@localhost:5432/appdb"))
 
     # JWT (Day 12)
     jwt_secret: str = Field(default=os.getenv("JWT_SECRET", "dev-secret-change-me"))

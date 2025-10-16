@@ -64,9 +64,7 @@ def place_order(
         raise to_http(exc) from exc
 
 
-@router.post(
-    "/{order_id}/allocate", status_code=status.HTTP_200_OK, dependencies=[Depends(require_admin)]
-)
+@router.post("/{order_id}/allocate", status_code=status.HTTP_200_OK, dependencies=[Depends(require_admin)])
 def allocate_stock(
     order_id: str,
     uow: Annotated[InMemoryUnitOfWork, Depends(get_uow)],

@@ -86,9 +86,7 @@ def _inventory_to_models(inv: Inventory) -> tuple[InventoryLocationModel, list[I
     return loc, items
 
 
-def _models_to_inventory(
-    loc: InventoryLocationModel, items: Sequence[InventoryItemModel]
-) -> Inventory:
+def _models_to_inventory(loc: InventoryLocationModel, items: Sequence[InventoryItemModel]) -> Inventory:
     inv = Inventory(location=loc.location)
     for row in items:
         inv.set_on_hand(Sku(row.sku), int(row.on_hand))
@@ -126,11 +124,7 @@ class SqlAlchemyOrderRepository(AsyncOrderRepository):
     session: AsyncSession
 
     async def get(self, order_id: OrderId) -> Order | None:
-        stmt = (
-            select(OrderModel)
-            .options(selectinload(OrderModel.lines))
-            .where(OrderModel.id == str(order_id.value))
-        )
+        stmt = select(OrderModel).options(selectinload(OrderModel.lines)).where(OrderModel.id == str(order_id.value))
         res = await self.session.execute(stmt)
         model = res.scalar_one_or_none()
         return _model_to_order(model) if model else None
@@ -141,11 +135,7 @@ class SqlAlchemyOrderRepository(AsyncOrderRepository):
         self.session.add(model)
 
     async def list(self) -> Iterable[Order]:
-        stmt = (
-            select(OrderModel)
-            .options(selectinload(OrderModel.lines))
-            .order_by(OrderModel.created_at.asc())
-        )
+        stmt = select(OrderModel).options(selectinload(OrderModel.lines)).order_by(OrderModel.created_at.asc())
         res = await self.session.execute(stmt)
         models = cast("list[OrderModel]", res.scalars().all())
         return [_model_to_order(m) for m in models]
@@ -173,9 +163,7 @@ class SqlAlchemyInventoryRepository(AsyncInventoryRepository):
             await self.session.flush()  # PK確定
 
         # 既存itemを削除してから入れ直し.シンプル実装
-        await self.session.execute(
-            delete(InventoryItemModel).where(InventoryItemModel.location == inventory.location)
-        )
+        await self.session.execute(delete(InventoryItemModel).where(InventoryItemModel.location == inventory.location))
         _, items = _inventory_to_models(inventory)
         for im in items:
             self.session.add(im)

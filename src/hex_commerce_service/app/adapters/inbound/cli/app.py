@@ -20,9 +20,7 @@ app.add_typer(orders_cmd.app, name="orders", help="Manage orders")
 def main(
     ctx: typer.Context,
     *,
-    json_output: bool = typer.Option(
-        "--json", help="Output JSON where applicable", is_flag=True, show_default=False
-    ),
+    json_output: bool = typer.Option("--json", help="Output JSON where applicable", is_flag=True, show_default=False),
 ) -> None:
     ctx.obj = {"json": bool(json_output)}
 

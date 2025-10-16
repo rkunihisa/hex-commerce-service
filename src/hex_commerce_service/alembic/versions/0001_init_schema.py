@@ -67,9 +67,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("location", "sku"),
     )
 
-    op.create_check_constraint(
-        "ck_inventory_items_on_hand_non_negative", "inventory_items", "on_hand >= 0"
-    )
+    op.create_check_constraint("ck_inventory_items_on_hand_non_negative", "inventory_items", "on_hand >= 0")
 
 
 def downgrade() -> None:

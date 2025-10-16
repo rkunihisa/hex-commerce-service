@@ -24,9 +24,7 @@ def add_product(
 ) -> None:
     svc = get_services()
     try:
-        product = Product(
-            sku=Sku(sku), name=name.strip(), unit_price=Money.from_major(Decimal(price), currency)
-        )
+        product = Product(sku=Sku(sku), name=name.strip(), unit_price=Money.from_major(Decimal(price), currency))
         with svc.uow:
             svc.uow.products.add(product)
             svc.uow.commit()

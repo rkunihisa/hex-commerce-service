@@ -51,7 +51,9 @@ test = "pytest"
 "bench" = "python src/scripts/bench/seed_and_query.py"
 api = "uvicorn hex_commerce_service.app.adapters.inbound.api.app:create_app --factory --reload"
 cli = "python -m app.adapters.inbound.cli.app"
-
+markers = [
+  "asyncio: mark test as using asyncio",
+]
 [tool.pytest.ini_options]
 testpaths = ["src/tests"]
 addopts = [
